@@ -1,0 +1,119 @@
+﻿
+<form id="myForm">
+    <div class="mb-3">
+        <label for="exampleName" class="form-label">Name</label>
+        <input type="text" class="form-control" id="exampleName" aria-describedby="nameHelp" required>
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <input type="text" class="form-control" id="exampleInputPassword1" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="exampleFacebook" class="form-label">Facebook</label>
+        <input type="text" class="form-control" id="exampleFacebook">
+    </div>
+    <div class="mb-3">
+        <label for="exampleInstagram" class="form-label">Instagram</label>
+        <input type="text" class="form-control" id="exampleInstagram">
+    </div>
+    <div class="mb-3">
+        <label for="exampleTwitter" class="form-label">Twitter</label>
+        <input type="text" class="form-control" id="exampleTwitter">
+    </div>
+
+    <button type="button" id="addSocialBtn" class="btn btn-secondary">Add Social</button>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<table class="table table-success table-striped mt-3" id="socialMediaTable">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Platform</th>
+            <th scope="col">Link</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Dynamic rows will be added here -->
+    </tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        let socialCount = 0;
+        const socialMedia = [];
+
+        // Add social media platforms to the table
+        $('#addSocialBtn').click(function () {
+            const facebook = $('#exampleFacebook').val();
+            const instagram = $('#exampleInstagram').val();
+            const twitter = $('#exampleTwitter').val();
+
+            if (facebook || instagram || twitter) {
+                socialCount++;
+                socialMedia.push({
+                    Facebook: facebook,
+                    Instagram: instagram,
+                    Twitter: twitter
+                });
+
+                // Add to the table
+                $('#socialMediaTable tbody').append(`
+                        <tr>
+                            <th scope="row">${socialCount}</th>
+                            <td>Facebook: ${facebook}</td>
+                            <td>Instagram: ${instagram}</td>
+                            <td>Twitter: ${twitter}</td>
+                            <td><button class="btn btn-danger removeRowBtn">Remove</button></td>
+                        </tr>
+                    `);
+
+                // Clear input fields
+                $('#exampleFacebook').val('');
+                $('#exampleInstagram').val('');
+                $('#exampleTwitter').val('');
+            }
+        });
+
+        // Form submission
+        $('#myForm').submit(function (e) {
+            e.preventDefault();
+
+            // Gather form data
+            const name = $('#exampleName').val();
+            const email = $('#exampleInputEmail1').val();
+            const password = $('#exampleInputPassword1').val();
+
+            // Send data to the backend using AJAX
+            $.ajax({
+                url: '/Home/createMasterForm',  // Ensure this matches your route
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    name: name,    // Ensure the naming matches exactly with parameters in the controller
+                    email: email,
+                    password: password,
+                    socialMedia: socialMedia
+                }),
+                success: function (response) {
+                    alert('Data submitted successfully!');
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>
+
+
+@* Script here for the Edit Module *@
+
+

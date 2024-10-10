@@ -1,0 +1,59 @@
+﻿@model List<UserInfoViewModel>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Facebook</th>
+            <th scope="col">Instagram</th>
+            <th scope="col">Twitter</th>
+            <th scope="col">Action</th> <!-- New Action column -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <th scope="row">@user.Id</th>
+                <td>@user.Name</td>
+                <td>@user.Email</td>
+                <td>@user.Facebook</td>
+                <td>@user.Instagram</td>
+                <td>@user.Twitter</td>
+                <td>
+                    <!-- Edit button -->
+                    <a href="@Url.Action("editMasterForm", new { id = user.Id })" class="btn btn-primary btn-sm">Edit</a>
+
+                    <!-- Delete button -->
+                    <button class="btn btn-danger btn-sm delete-btn" data-id="@user.Id">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        // Delete button click event
+        $('.delete-btn').click(function () {
+            const userId = $(this).data('id');
+            if (confirm("Are you sure you want to delete this user?")) {
+                $.ajax({
+                    url: '/Home/DeleteUser', // Adjust URL according to your route configuration
+                    method: 'POST',
+                    data: { id: userId },
+                    success: function (response) {
+                        alert("User deleted successfully.");
+                        location.reload(); // Refresh the page to update the list
+                    },
+                    error: function (error) {
+                        console.error('Error deleting user:', error);
+                        alert("Error deleting user.");
+                    }
+                });
+            }
+        });
+    });
+</script>

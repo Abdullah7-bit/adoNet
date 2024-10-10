@@ -1,0 +1,102 @@
+﻿@model UserData
+
+<form id="editForm">
+    <input type="hidden" id="infoId" value="@Model.InfoId" />
+
+    <div class="mb-3">
+        <label for="nameInput" class="form-label">Name</label>
+        <input type="text" class="form-control" id="nameInput" value="@Model.Name" />
+    </div>
+
+    <div class="mb-3">
+        <label for="emailInput" class="form-label">Email</label>
+        <input type="email" class="form-control" id="emailInput" value="@Model.Email" />
+    </div>
+
+    <div class="mb-3">
+        <label for="passwordInput" class="form-label">Password</label>
+        <input type="password" class="form-control" id="passwordInput" value="@Model.Password" />
+    </div>
+
+    <table class="table table-striped" id="socialMediaTable">
+        <thead>
+            <tr>
+                <th>Facebook</th>
+                <th>Instagram</th>
+                <th>Twitter</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var social in Model.SocialMedia)
+            {
+                <tr>
+                    <td><input type="text" value="@social.Facebook" class="form-control" /></td>
+                    <td><input type="text" value="@social.Instagram" class="form-control" /></td>
+                    <td><input type="text" value="@social.Twitter" class="form-control" /></td>
+                    <td><button type="button" class="btn btn-danger removeRowBtn">Remove</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="button" id="addSocialBtn" class="btn btn-secondary">Add Social Media</button>
+    <button type="button" id="submitBtn" class="btn btn-primary">Update</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Function to add new social media row
+        $('#addSocialBtn').click(function () {
+            $('#socialMediaTable tbody').append(`
+                    <tr>
+                        <td><input type="text" class="form-control" /></td>
+                        <td><input type="text" class="form-control" /></td>
+                        <td><input type="text" class="form-control" /></td>
+                        <td><button type="button" class="btn btn-danger removeRowBtn">Remove</button></td>
+                    </tr>
+                `);
+        });
+
+        // Function to remove a row
+        $(document).on('click', '.removeRowBtn', function () {
+            $(this).closest('tr').remove();
+        });
+
+        $('#submitBtn').click(function () {
+            const infoId = $('#infoId').val();
+            const name = $('#nameInput').val();
+            const email = $('#emailInput').val();
+            const password = $('#passwordInput').val();
+
+            const socialMedia = [];
+            $('#socialMediaTable tbody tr').each(function () {
+                const facebook = $(this).find('input').eq(0).val();
+                const instagram = $(this).find('input').eq(1).val();
+                const twitter = $(this).find('input').eq(2).val();
+                socialMedia.push({ Facebook: facebook, Instagram: instagram, Twitter: twitter });
+            });
+
+            $.ajax({
+                url: '/Home/editMasterForm',  // Ensure this matches your route
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    InfoId: infoId,
+                    Name: name,
+                    Email: email,
+                    Password: password,
+                    SocialMedia: socialMedia
+                }),
+                success: function (response) {
+                    alert('Data updated successfully!');
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>
